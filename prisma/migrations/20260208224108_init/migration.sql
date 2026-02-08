@@ -1,50 +1,57 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
     "role" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Product" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "pricingType" TEXT NOT NULL DEFAULT 'unit',
-    "price" REAL NOT NULL DEFAULT 0,
-    "pricePerKg" REAL,
+    "price" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "pricePerKg" DOUBLE PRECISION,
     "active" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Comanda" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "number" INTEGER NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'open',
-    "total" REAL NOT NULL DEFAULT 0,
+    "total" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "itemsCount" INTEGER NOT NULL DEFAULT 0,
     "paymentMethod" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "closedAt" DATETIME,
-    "cashPaid" REAL,
-    "change" REAL
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "closedAt" TIMESTAMP(3),
+    "cashPaid" DOUBLE PRECISION,
+    "change" DOUBLE PRECISION,
+
+    CONSTRAINT "Comanda_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "ComandaItem" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "comandaId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "price" REAL NOT NULL,
+    "price" DOUBLE PRECISION NOT NULL,
     "qty" INTEGER NOT NULL,
     "observation" TEXT,
     "weightGrams" INTEGER,
-    CONSTRAINT "ComandaItem_comandaId_fkey" FOREIGN KEY ("comandaId") REFERENCES "Comanda" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+
+    CONSTRAINT "ComandaItem_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -67,3 +74,6 @@ CREATE INDEX "ComandaItem_comandaId_idx" ON "ComandaItem"("comandaId");
 
 -- CreateIndex
 CREATE INDEX "ComandaItem_productId_idx" ON "ComandaItem"("productId");
+
+-- AddForeignKey
+ALTER TABLE "ComandaItem" ADD CONSTRAINT "ComandaItem_comandaId_fkey" FOREIGN KEY ("comandaId") REFERENCES "Comanda"("id") ON DELETE CASCADE ON UPDATE CASCADE;
