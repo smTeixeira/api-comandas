@@ -6,6 +6,15 @@ const { authRoutes } = require("./routes/auth.routes");
 const { productsRoutes } = require("./routes/products.routes");
 const { comandasRoutes } = require("./routes/comandas.routes");
 
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://sistema-de-comandas-mu.vercel.app/",
+    ],
+  })
+);
+
 const app = express();
 
 app.use(cors({ origin: true }));
