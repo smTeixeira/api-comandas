@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  role         String
+  createdAt    DateTime @default(now())
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  pricingType String   @default("unit") // "unit" | "weight"
+  price       Float    @default(0)
+  pricePerKg  Float?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Comanda {
+  id            String   @id @default(cuid())
+  number        Int
+  status        String   @default("open") // "open" | "closed"
+  total         Float    @default(0)
+  itemsCount    Int      @default(0)
+  paymentMethod String?  // "pix" | "card" | "cash"
+  createdAt     DateTime @default(now())
+  closedAt      DateTime?
+
+  cashPaid      Float?
+  change        Float?
+
+  items         ComandaItem[]
+
+  @@index([number])
+  @@index([status])
+  @@index([createdAt])
+  @@index([closedAt])
+}
+
+model ComandaItem {
+  id          String  @id @default(cuid())
+  comandaId   String
+  productId   String
+  name        String
+  price       Float
+  qty         Int
+  observation String?
+  weightGrams Int?
+
+  comanda     Comanda @relation(fields: [comandaId], references: [id], onDelete: Cascade)
+
+  @@index([comandaId])
+  @@index([productId])
+}
