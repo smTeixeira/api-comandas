@@ -14,8 +14,10 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://sistema-de-comandas-mu.vercel.app/",
+      "https://sistema-de-comandas-mu.vercel.app",
     ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -31,3 +33,4 @@ app.use("/comandas", comandasRoutes);
 
 const port = Number(process.env.PORT || 3333);
 app.listen(port, () => console.log(`API on http://localhost:${port}`));
+app.options("*", cors());
