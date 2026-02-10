@@ -30,7 +30,7 @@ app.get("/health", (req, res) => res.json({ ok: true }));
 app.use("/auth", authRoutes);
 app.use("/products", productsRoutes);
 app.use("/comandas", comandasRoutes);
+// app.options("*", cors());
 
 const port = Number(process.env.PORT || 3333);
 app.listen(port, () => console.log(`API on http://localhost:${port}`));
-app.options("*", cors());
