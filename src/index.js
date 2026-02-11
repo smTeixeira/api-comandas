@@ -5,8 +5,7 @@ const cors = require("cors");
 const { authRoutes } = require("./routes/auth.routes");
 const { productsRoutes } = require("./routes/products.routes");
 const { comandasRoutes } = require("./routes/comandas.routes");
-
-
+const { reportsRoutes } = require("./routes/reports.routes");
 
 const app = express();
 
@@ -30,6 +29,7 @@ app.get("/health", (req, res) => res.json({ ok: true }));
 app.use("/auth", authRoutes);
 app.use("/products", productsRoutes);
 app.use("/comandas", comandasRoutes);
+app.use("/reports", reportsRoutes);
 // app.options("*", cors());
 
 const port = Number(process.env.PORT || 3333);
