@@ -59,6 +59,10 @@ router.get("/today", auth(["admin", "caixa"]), async (req, res) => {
  * POST /comandas
  * cria comanda por número
  * admin e caixa
+ *
+ * ✅ Regra nova:
+ * - NÃO pode existir outra comanda ABERTA com o mesmo number
+ * - se a comanda anterior estiver FECHADA, pode criar outra com o mesmo number (reutilizar)
  */
 router.post("/", auth(["admin", "caixa"]), async (req, res) => {
   const schema = z.object({
@@ -68,24 +72,28 @@ router.post("/", auth(["admin", "caixa"]), async (req, res) => {
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json(parsed.error.flatten());
 
-  // impedir duplicar número no mesmo dia
-  const from = startOfDay();
-  const to = endOfDay();
+  const number = parsed.data.number;
 
-  const existsToday = await prisma.comanda.findFirst({
+  // ✅ só bloqueia se existir uma ABERTA com esse número
+  const existsOpen = await prisma.comanda.findFirst({
     where: {
-      number: parsed.data.number,
-      createdAt: { gte: from, lte: to },
+      number,
+      status: "open",
     },
+    select: { id: true },
   });
 
-  if (existsToday) {
-    return res.status(409).json({ error: "number_already_exists_today" });
+  if (existsOpen) {
+    return res.status(409).json({
+      error: "number_already_open",
+      message: "Já existe uma comanda ABERTA com esse número.",
+      openId: existsOpen.id,
+    });
   }
 
   const comanda = await prisma.comanda.create({
     data: {
-      number: parsed.data.number,
+      number,
       status: "open",
       total: 0,
       itemsCount: 0,
